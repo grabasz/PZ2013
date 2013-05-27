@@ -1,24 +1,13 @@
 package zespolowe;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
-/**
- *
- * @author marcij
- */
-public class ComplexMeasurement implements Runnable{
 
-    /**
-     * @param args the command line arguments
-     */
+public class ComplexMeasurement implements Runnable{
      ComplexMeasurement(int number,String operation){
         this.number = number;
         this.operation = operation;
@@ -70,12 +59,12 @@ public class ComplexMeasurement implements Runnable{
         
     }
 
-//w zależności od wybranej opcji wykonuje obliczenia i zwraca wynik
     public void chooseOperation(){
         if (dataCollected){
             switch(operation){
                 case("mean") : this.mean();
-                case("maksimum") : this.maksimum();   
+                case("maksimum") : this.maksimum(); 
+                case("minimum") : this.minimum(); 
                 default : this.mean();    
             }
         }
