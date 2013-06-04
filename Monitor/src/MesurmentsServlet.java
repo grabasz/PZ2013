@@ -48,7 +48,7 @@ public class MesurmentsServlet extends HttpServlet {
         }else{
         	response.setContentType("application/json");
         	Mesurment m=MesurmentContainer.getById(Integer.parseInt(id));
-        	out.println(m.getJSON());
+        	out.println(MesurmentContainer.getJSON(m));
         }
         
         
