@@ -15,7 +15,7 @@ public  class MesurmentContainer {
 		mesurments.add(new SimpleMesurment("test2"));
 		mesurments.add(new SimpleMesurment("test3"));
 			
-		(new Thread(new SensorReciver())).start();
+		//(new Thread(new SensorReciver())).start();
 		
 	}
 	//TODO do zmiany gdy dogadamy sie co do ramki

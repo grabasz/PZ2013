@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
  * Klasa przykładowa pokazująca, jak odebrać dane z sensora.
  * @author Konrad Tabor
  */
-public class SensorReciver implements Runnable
+public class SensorReciver extends Thread
 {
 
     public void run()
