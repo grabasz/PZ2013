@@ -43,4 +43,11 @@ public abstract class Sensor implements ISensor
     {
         return sensorType;
     }
+    /**
+     * returns system properities
+     * @return string, system properities
+     */
+    public String GetOsProperities(){
+        return "OS:" + sensor.osName() + " NUM CPU:" + sensor.numCpus() + " CPU FREQ [MHz]:" + (sensor.cpuFrequencyInHz()/1000000.0);
+    }
 }

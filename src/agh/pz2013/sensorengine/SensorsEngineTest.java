@@ -27,54 +27,58 @@ public class SensorsEngineTest
         System.out.println(Config.getHostname());
         System.out.println(Config.getPort());
 
-        // przykład działania
+        
         int i = 0;
-        while (i < 5)
-        {
-            i++;
-
-            System.out.println(cpu.GetSensorId() + " " + cpu.GetSensorType() + " " + cpu.GetMeasurment());
-            System.out.println(mem.GetSensorId() + " " + mem.GetSensorType() + " " + mem.GetMeasurment());
-            try
-            {
-                Thread.sleep(500);
-            } catch (InterruptedException ex)
-            {
-                Logger.getLogger(SensorsEngineTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
         DatagramSocket socket = null;
-
+        
         try
         {
             // Convert the arguments first, to ensure that they are valid
             InetAddress host = InetAddress.getByName(Config.getHostname());
             int port = Integer.parseInt(Config.getPort());
-
+            
             // Construct the socket
             socket = new DatagramSocket();
+            
+            while(true){
+                // Construct the datagram packet
+                String msgMem, msgCpu;
 
-            // Construct the datagram packet
-            String msg = mem.GetSensorId() + " " + mem.GetSensorType() + " " + mem.GetMeasurment();
-            byte[] data = msg.getBytes();
-            DatagramPacket packet = new DatagramPacket(data, data.length, host, port);
+                byte[] dataMem;
+                byte[] dataCpu;
 
-            // Send it
-            socket.send(packet);
+                DatagramPacket packetMem;
+                DatagramPacket packetCpu;
 
-            // Set a receive timeout, 2000 milliseconds
-            socket.setSoTimeout(2000);
+                if(i % 60 == 0){ //every minute send identyfying message
+                    msgMem = constructIdentyfyingMessage(mem);
+                    msgCpu = constructIdentyfyingMessage(cpu);
+                    
+                    dataMem = msgMem.getBytes();
+                    dataCpu = msgCpu.getBytes();
 
-            // Prepare the packet for receive
-            packet.setData(new byte[100]);
+                    packetMem = new DatagramPacket(dataMem, dataMem.length, host, port);
+                    packetCpu = new DatagramPacket(dataCpu, dataCpu.length, host, port);
+                    // Send it
+                    socket.send(packetMem);
+                    socket.send(packetCpu);
+                }
+                
+                msgMem = constructStandardMessage(mem);
+                msgCpu = constructStandardMessage(cpu);
 
-            // Wait for a response from the server
-            socket.receive(packet);
+                dataMem = msgMem.getBytes();
+                dataCpu = msgCpu.getBytes();
 
-            // Print the response
-            System.out.println(new String(packet.getData()));
-
+                packetMem = new DatagramPacket(dataMem, dataMem.length, host, port);
+                packetCpu = new DatagramPacket(dataCpu, dataCpu.length, host, port);
+                // Send it
+                socket.send(packetMem);
+                socket.send(packetCpu);
+                
+                ++i;
+                Thread.sleep(1000);
+            }
         }
         catch (Exception e)
         {
@@ -87,5 +91,15 @@ public class SensorsEngineTest
                 socket.close();
             }
         }
+    }
+    
+    public static String constructIdentyfyingMessage(Sensor sensor){
+        String msg = sensor.GetSensorId() + ";" + sensor.GetSensorType() + ";" + sensor.GetOsProperities();
+        return msg;
+    }
+    
+    public static String constructStandardMessage(Sensor sensor){
+        String msg = sensor.GetSensorId() + ";" + sensor.GetMeasurment();
+        return msg;
     }
 }
