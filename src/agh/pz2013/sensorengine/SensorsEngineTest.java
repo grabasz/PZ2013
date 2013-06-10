@@ -94,12 +94,12 @@ public class SensorsEngineTest
     }
     
     public static String constructIdentyfyingMessage(Sensor sensor){
-        String msg = sensor.GetSensorId() + ";" + sensor.GetSensorType() + ";" + sensor.GetOsProperities();
+        String msg = sensor.GetSensorId() + ";" + sensor.GetSensorType() + ";" + sensor.GetOsProperities() + ";";
         return msg;
     }
     
     public static String constructStandardMessage(Sensor sensor){
-        String msg = sensor.GetSensorId() + ";" + sensor.GetMeasurment();
+        String msg = sensor.GetSensorId() + ";" + sensor.GetMeasurment() + ";";
         return msg;
     }
 }
