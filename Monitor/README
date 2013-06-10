@@ -1,0 +1,27 @@
+Aby odpaliæ wrzuciæ wara do folderu /webapps tomcata.
+Albo oczywiœcie odpaliæ Ÿród³a przy pomocy jakiegoœ ide.
+Testowane na tomcacie 6.
+
+
+Co zosta³o zrobione:
+-Zrobiona zosta³a klasa Mesurment, która odpowiada jednemu pomiarowi(do wykorzystania w pomiarach z³o¿onych).
+	*getJSON() trzeba przerobiæ metode getJSON jak siê dogadamy z sensorami co do ramek.
+-Servlet który dzia³a jak interfejs RESTowy(albo tak mi siê przynajmniej wydaje).
+	Aby zobaczyæ dzia³anie servletu po odpaleniu aplikacji na serverze przejœæ pod adres:
+	[host:port]/[app_name]/Mesurments
+	czyli np.:
+	http://localhost:8080/Monitor/Mesurments
+	Zostanie wyœwietlona lista linków do pomiarów np.:
+	http://localhost:8080/Monitor/Mesurments?id=1
+
+-Klasa SensorReciver odbiera dane z sensorów. Jest odpalana jako osobny w¹tek.
+-Klasa MesurmentContainer to kontener na pomiary
+	*metoda parseSensorData() bêdzie równie¿ do zmiany jak sie dogadamy co do ramek.
+	*widze ze jakies smieci sie wrzucaja do jsona, trzeba na to spojrzeæ
+	
+	
+Z tego co pamietam mia³y byæ dwa rodzaje ramek: jedna skrócona zawieraj¹ca tylko name, wartoœæ i date(data powinna przychodziæ z sensorów bo narazie w aplikacji mamy date zapisania pomiaru w monitorze a nie wykonania go) oraz druga zawieraj¹ca szczegó³owe dane.
+Trzeba sie dogadaæ z sensorami co to za szczegó³owe dane i ewentualnie pododawaæ pola do klasy Mesurment.
+Mój pomys³ jest taki aby wykorzystaæ flage isInitialized.
+Jeœli otrzymamy pomiar od nowego sensora i jest to krótka ramka, to tworzymy Mesurment i zaznaczamy isInitialized na false, nastêpnie za ka¿dym razem gy przyjdzie rozszerzona ramka sprawdzamy flage i ewentualnie dogryamy dane.
+Jeœli od razu przyjdzie rozszerzona ramka to nie ma problemu.
