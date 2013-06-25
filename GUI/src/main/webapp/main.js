@@ -3,9 +3,56 @@
  * and open the template in the editor.
  */
 
+var onSiteLoggerString = "<p><strong>== Logger Initialization ==</strong></p>";
+
+var actualIntervalData;
+
+function onSiteLogger(info) {
+    var d=new Date();
+    var time = "^"+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"."+d.getMilliseconds()+">>"
+    onSiteLoggerString="<p>" + time+ info +"</p>"+onSiteLoggerString;
+    $("#commandStatus").html(
+        onSiteLoggerString
+        );
+}
+
 
 $('document').ready(function(){
-  var data=[];
+ 
+    RefreshMesurmentsButtons (this) ;
+})
+
+function RefreshMesurmentsButtons (form) {
+    $.ajax({
+    url: baseMonitorURL,
+    success: function(dt){
+        onSiteLogger("OnSucces refreshbutton recive data! Something goes realy bad ... "+dt);
+    },
+    error: function(resp){
+        onSiteLogger("OnError refreshbutton recive data! "+resp);
+        
+        var allLinks = $(resp.responseText).filter('a');
+
+        var buttonsHtml = "";
+        allLinks.each(function (entry) {
+          buttonsHtml = buttonsHtml + '<form action="" onsubmit="return PlotSelected(this);">' ;
+          buttonsHtml = buttonsHtml +
+                  '<button type="submit" class="groovybutton" >' + allLinks[entry].text +  '</button>';
+
+          buttonsHtml = buttonsHtml + '</form>';        
+        });
+        $('#MesurmentsButtons').html(buttonsHtml);
+        onSiteLogger("OnError refreshbutton refreshing compleat :D");
+    },
+    dataType: 'text/html'
+  });
+    return false;
+}
+
+
+function PlotSelected(form) {
+
+ var data=[];
   var plot_container = $("#Plot");
   var limit=100;
 //  var data = new Array(limit);
@@ -40,50 +87,35 @@ $('document').ready(function(){
             }};
   var plot=$.plot(plot_container, [data], config);
   
-  var makeSortedUniqeArray=function(arr){
-      
-    arr = arr.sort(function (a, b) { return a[0] - b[0]; });
-    var ret = [arr[0]];
-    for (var i = 1; i < arr.length; i++) { // start loop at 1 as element 0 can never be a duplicate
-        if (arr[i-1][0] !== arr[i][0]) {
-            ret.push(arr[i]);
-        }
-    }
-    return ret;    
-  }
   
-  setInterval(function(){
+  clearInterval(actualIntervalData);
+  actualIntervalData = setInterval(function(){
   $.ajax({
-  url: 'http://localhost:8080/GUI/GUIEngine',
-  //data: data,
+  url: baseMonitorURL+'?id='+form[0].textContent,
   success: function(dt){
-      console.log("aaa")
-      console.log(dt)
+      onSiteLogger("OnSucces timer recive data! Something goes realy bad ... "+dt);
   },
   error: function(resp){
-      new_values=JSON.parse(resp.responseText)
-      now =new Date();
+        onSiteLogger("OnError timer recive data! "+resp);
+      new_values=JSON.parse(resp.responseText);
+      $('#PlotName').html(new_values.Name);
       
-      
-      
-      data=makeSortedUniqeArray(data.concat(new_values)
-      ).filter(function(elem, index, array){
-         return (now.valueOf()-120*1000<elem[0] );
-      });//.slice(1);
-      
-      
-      plot=$.plot(plot_container, [data], config);
-      //plot.setData([data]);
-      //plot.draw();
-      //console.log(data)
-      
-      
-      
-  },
-  //crossDomain: true,
+      var plotData = new_values.data;
+      var toPlot = [];
+      $(plotData).each( function (entry) {
+          var formatedTime = new Date(0);
+          formatedTime.setUTCMilliseconds( plotData[entry].timestamp );
+          var timeToPlot = formatedTime.getMinutes() + ':' + formatedTime.getSeconds();
+          toPlot[entry]=[timeToPlot , plotData[entry].data ] ;
+      }
+          );
+     var plot_container = $("#Plot");
+      plot=$.plot(plot_container, toPlot  , config);
+      onSiteLogger("OnError timer refreshing compleat :D");
+    },
   dataType: 'application/json'
 });
   }, 100);
   
-    
-})
+return false;
+}
